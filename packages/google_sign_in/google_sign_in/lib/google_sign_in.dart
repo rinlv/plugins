@@ -338,6 +338,14 @@ class GoogleSignIn {
     }
   }
 
+  /// Remove previous account request
+  /// only iOS
+  Future removeAccountRequest({
+    bool suppressErrors = true,
+  }) async {
+    await GoogleSignInPlatform.instance.removeAccountRequest();
+  }
+
   /// Returns a future that resolves to whether a user is currently signed in.
   Future<bool> isSignedIn() async {
     await _ensureInitialized();

@@ -5,6 +5,7 @@
 // ignore_for_file: public_member_api_docs
 
 import 'dart:async';
+import 'dart:io';
 import 'dart:convert' show json;
 
 import "package:http/http.dart" as http;
@@ -32,7 +33,7 @@ class SignInDemo extends StatefulWidget {
   State createState() => SignInDemoState();
 }
 
-class SignInDemoState extends State<SignInDemo> {
+class SignInDemoState extends State<SignInDemo> with WidgetsBindingObserver {
   GoogleSignInAccount _currentUser;
   String _contactText;
 
@@ -48,7 +49,22 @@ class SignInDemoState extends State<SignInDemo> {
       }
     });
     _googleSignIn.signInSilently();
+    WidgetsBinding.instance.addObserver(this);
   }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (Platform.isIOS && state == AppLifecycleState.paused) {
+      _googleSignIn.removeAccountRequest();
+    }
+  }
+
 
   Future<void> _handleGetContact() async {
     setState(() {
@@ -98,7 +114,12 @@ class SignInDemoState extends State<SignInDemo> {
 
   Future<void> _handleSignIn() async {
     try {
-      await _googleSignIn.signIn();
+      await GoogleSignIn(
+        scopes: <String>[
+          'email',
+          'https://www.googleapis.com/auth/contacts.readonly',
+        ],
+      ).signIn();
     } catch (error) {
       print(error);
     }

@@ -121,6 +121,8 @@ static FlutterError *getFlutterError(NSError *error) {
     if ([self setAccountRequest:result]) {
       [[GIDSignIn sharedInstance] disconnect];
     }
+  } else if ([call.method isEqualToString:@"removeAccountRequest"]) {
+       [self removeAccountRequest];
   } else if ([call.method isEqualToString:@"clearAuthCache"]) {
     // There's nothing to be done here on iOS since the expired/invalid
     // tokens are refreshed automatically by getTokensWithHandler.
@@ -162,6 +164,12 @@ static FlutterError *getFlutterError(NSError *error) {
   } else {
     result(FlutterMethodNotImplemented);
   }
+}
+
+- (void)removeAccountRequest {
+    if (_accountRequest != nil) {
+        _accountRequest = nil;
+    }
 }
 
 - (BOOL)setAccountRequest:(FlutterResult)request {

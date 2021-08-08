@@ -122,6 +122,12 @@ abstract class GoogleSignInPlatform {
     throw UnimplementedError('clearAuthCache() has not been implemented.');
   }
 
+  /// Remove previous account request
+  /// only iOS
+  Future<void> removeAccountRequest() async {
+    throw UnimplementedError('removeAccountRequest() has not been implemented.');
+  }
+
   /// Requests the user grants additional Oauth [scopes].
   ///
   /// Scopes should come from the full  list

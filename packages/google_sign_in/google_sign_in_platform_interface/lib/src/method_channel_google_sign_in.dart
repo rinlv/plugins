@@ -80,6 +80,11 @@ class MethodChannelGoogleSignIn extends GoogleSignInPlatform {
   }
 
   @override
+  Future<void> removeAccountRequest() {
+    return channel.invokeMethod<void>('removeAccountRequest');
+  }
+
+  @override
   Future<bool> requestScopes(List<String> scopes) {
     return channel.invokeMethod<bool>(
       'requestScopes',
