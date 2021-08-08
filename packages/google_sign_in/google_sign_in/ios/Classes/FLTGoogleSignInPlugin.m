@@ -18,6 +18,8 @@ static NSString *const kErrorReasonSignInCanceled = @"sign_in_canceled";
 static NSString *const kErrorReasonNetworkError = @"network_error";
 static NSString *const kErrorReasonSignInFailed = @"sign_in_failed";
 
+static FlutterResult kAccountRequest;
+
 static FlutterError *getFlutterError(NSError *error) {
   NSString *errorCode;
   if (error.code == kGIDSignInErrorCodeHasNoAuthInKeychain) {
@@ -168,6 +170,7 @@ static FlutterError *getFlutterError(NSError *error) {
 
 - (void)removeAccountRequest {
     if (_accountRequest != nil) {
+        kAccountRequest = _accountRequest;
         _accountRequest = nil;
     }
 }
@@ -216,8 +219,10 @@ static FlutterError *getFlutterError(NSError *error) {
           break;
         }
       }
-      _accountRequest(@(granted));
-      _accountRequest = nil;
+      if (_accountRequest != nil) {
+        _accountRequest(@(granted));
+        _accountRequest = nil;
+      }
       _additionalScopesRequest = nil;
       return;
     } else {
@@ -248,9 +253,12 @@ static FlutterError *getFlutterError(NSError *error) {
 #pragma mark - private methods
 
 - (void)respondWithAccount:(id)account error:(NSError *)error {
-  FlutterResult result = _accountRequest;
+  FlutterResult result = _accountRequest != nil ? _accountRequest : kAccountRequest;
   _accountRequest = nil;
-  result(error != nil ? getFlutterError(error) : account);
+  kAccountRequest = nil;
+  if (result != nil) {
+    result(error != nil ? getFlutterError(error) : account);
+  }
 }
 
 - (UIViewController *)topViewController {
